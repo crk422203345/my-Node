@@ -20,7 +20,17 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// 动态挂载路由
+// 根路由 - 欢迎页面，避免首页 404
+app.get('/', (req, res) => {
+  res.json({
+    code: 200,
+    message: 'Welcome to Node.js API Server',
+    status: 'Running',
+    version: '1.0.0'
+  });
+});
+
+// 动态挂载其他路由 (/api, /user 等)
 setupRoutes(app);
 
 // 404 处理
