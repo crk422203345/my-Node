@@ -1,0 +1,17 @@
+{
+  "name": "node-dynamic-routing",
+  "version": "1.0.0",
+  "description": "Dynamic routing example in Node.js",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^4.22.1",
+    "mongoose": "^9.6.1",
+    "mysql2": "^3.22.3"
+  }
+}
