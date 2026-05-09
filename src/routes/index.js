@@ -7,13 +7,13 @@ const path = require('path');
  */
 module.exports = function setupRoutes(app) {
   const routesPath = __dirname;
-  
+
   fs.readdirSync(routesPath).forEach((file) => {
     // 排除当前文件 (index.js)
     if (file === 'index.js') return;
 
     if (file.endsWith('.js')) {
-      const routePrefix = `/${file.replace('.js', '')}`;
+      const routePrefix = `/api/${file.replace('.js', '')}`;
       const routeModule = require(path.join(routesPath, file));
 
       app.use(routePrefix, routeModule);
