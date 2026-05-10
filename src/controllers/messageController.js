@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
 const Message = require('../models/Message');
+const connectDB = require('../config/db');
 
 /**
  * 获取最新留言列表
  */
 exports.getMessages = async (req, res) => {
   try {
-    // 检查数据库连接状态
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error('数据库未连接，请检查 MongoDB Atlas 白名单 (0.0.0.0/0) 或环境变量');
-    }
+    // 【关键优化】在执行查询前，确保连接已建立
+    await connectDB();
 
     const messages = await Message.find()
       .sort({ createdAt: -1 }) // 按时间倒序
@@ -41,10 +40,8 @@ exports.addMessage = async (req, res) => {
       return res.status(400).json({ code: 400, message: '昵称和内容不能为空' });
     }
 
-    // 检查数据库连接状态
-    if (mongoose.connection.readyState !== 1) {
-      throw new Error('数据库未连接，请检查 MongoDB Atlas 白名单 (0.0.0.0/0) 或环境变量');
-    }
+    // 【关键优化】在保存数据前，确保连接已建立
+    await connectDB();
 
     const newMessage = new Message({
       nickname,

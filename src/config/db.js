@@ -16,25 +16,37 @@ const dbOptions = {
   autoIndex: true
 };
 
+let cachedConnection = null;
+
 const connectDB = async () => {
+  // 如果已经有活跃连接，直接返回
+  if (mongoose.connection.readyState === 1) {
+    return mongoose.connection;
+  }
+
+  // 如果正在连接中，等待现有的连接过程
+  if (cachedConnection) {
+    return await cachedConnection;
+  }
+
   try {
-    if (mongoose.connection.readyState >= 1) return;
-
-    mongoose.connection.on('connected', () => {
-      const host = mongoose.connection.host;
-      console.log(`✅ MongoDB 数据库连接成功 | 目标主机: ${host}`);
-    });
-
-    mongoose.connection.on('error', (err) => {
-      console.error('❌ MongoDB 数据库错误:', err.message);
-    });
-
-    await mongoose.connect(MONGODB_URI, dbOptions);
+    console.log('正在尝试连接 MongoDB...');
+    cachedConnection = mongoose.connect(MONGODB_URI, dbOptions);
+    
+    await cachedConnection;
+    console.log(`✅ MongoDB 数据库连接成功`);
+    return mongoose.connection;
   } catch (err) {
-    console.error('💥 MongoDB 初始连接失败:', err.message);
-    // 在 Serverless 环境中移除 process.exit，防止函数硬崩溃
+    cachedConnection = null;
+    console.error('💥 MongoDB 连接失败:', err.message);
+    throw err;
   }
 };
+
+// 预执行一次连接
+connectDB();
+
+module.exports = connectDB;
 
 // 优雅关闭连接
 process.on('SIGINT', async () => {
@@ -43,7 +55,4 @@ process.on('SIGINT', async () => {
   process.exit(0);
 });
 
-// 执行连接
-connectDB();
-
-module.exports = mongoose.connection;
+module.exports = connectDB;
