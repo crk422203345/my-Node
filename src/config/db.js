@@ -16,7 +16,8 @@ const dbOptions = {
 
 const connectDB = async () => {
   try {
-    // 监听连接事件
+    if (mongoose.connection.readyState >= 1) return;
+
     mongoose.connection.on('connected', () => {
       const host = mongoose.connection.host;
       console.log(`✅ MongoDB 数据库连接成功 | 目标主机: ${host}`);
@@ -26,15 +27,10 @@ const connectDB = async () => {
       console.error('❌ MongoDB 数据库错误:', err.message);
     });
 
-    mongoose.connection.on('disconnected', () => {
-      console.warn('⚠️ MongoDB 数据库连接已断开，正在尝试重连...');
-    });
-
     await mongoose.connect(MONGODB_URI, dbOptions);
   } catch (err) {
     console.error('💥 MongoDB 初始连接失败:', err.message);
-    // 在生产环境中可能不希望进程直接退出，但如果是核心数据库，通常选择退出以便重启
-    process.exit(1);
+    // 在 Serverless 环境中移除 process.exit，防止函数硬崩溃
   }
 };
 
