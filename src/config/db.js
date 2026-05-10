@@ -8,10 +8,12 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/my_adm
  * 针对线上云数据库进行优化
  */
 const dbOptions = {
-  maxPoolSize: 10, // 连接池大小，根据并发量调整
-  serverSelectionTimeoutMS: 5000, // 超时时间 5s
-  socketTimeoutMS: 45000, // 保持活跃，防止云数据库断开空闲连接
-  family: 4 // 使用 IPv4
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000, // 5s 连不上立刻报错
+  socketTimeoutMS: 45000,
+  family: 4,
+  bufferCommands: false, // 禁止在未连接时缓冲命令
+  autoIndex: true
 };
 
 const connectDB = async () => {

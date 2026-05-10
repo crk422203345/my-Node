@@ -5,6 +5,11 @@ const Message = require('../models/Message');
  */
 exports.getMessages = async (req, res) => {
   try {
+    // 检查数据库连接状态
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('数据库未连接，请检查 MongoDB Atlas 白名单 (0.0.0.0/0) 或环境变量');
+    }
+
     const messages = await Message.find()
       .sort({ createdAt: -1 }) // 按时间倒序
       .limit(50); // 限制返回数量
@@ -33,6 +38,11 @@ exports.addMessage = async (req, res) => {
 
     if (!nickname || !content) {
       return res.status(400).json({ code: 400, message: '昵称和内容不能为空' });
+    }
+
+    // 检查数据库连接状态
+    if (mongoose.connection.readyState !== 1) {
+      throw new Error('数据库未连接，请检查 MongoDB Atlas 白名单 (0.0.0.0/0) 或环境变量');
     }
 
     const newMessage = new Message({
