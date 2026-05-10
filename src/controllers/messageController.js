@@ -16,7 +16,11 @@ exports.getMessages = async (req, res) => {
     });
   } catch (err) {
     console.error('获取留言失败:', err);
-    res.status(500).json({ code: 500, message: '获取留言失败' });
+    res.status(500).json({ 
+      code: 500, 
+      message: '获取留言失败',
+      error: err.message // 将具体错误信息传给前端，方便排查
+    });
   }
 };
 
@@ -48,6 +52,10 @@ exports.addMessage = async (req, res) => {
     if (err.name === 'ValidationError') {
       return res.status(400).json({ code: 400, message: err.message });
     }
-    res.status(500).json({ code: 500, message: '存储留言失败' });
+    res.status(500).json({ 
+      code: 500, 
+      message: '存储留言失败',
+      error: err.message 
+    });
   }
 };
