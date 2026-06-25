@@ -50,8 +50,8 @@ exports.addMessage = async (req, res) => {
 
     await newMessage.save();
 
-    res.status(201).json({
-      code: 201,
+    res.status(200).json({
+      code: 200,
       message: '留言成功',
       data: newMessage
     });
